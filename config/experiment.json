@@ -1,0 +1,36 @@
+{
+  "default_system": "frozen",
+  "base_model": {
+    "path": "models/gemma-4-e4b-it-4bit",
+    "id": "mlx-community/gemma-4-e4b-it-4bit",
+    "revision": "475b9088d29754a3379866cf5aeb6b41acd313c2",
+    "manifest_sha256": "b567466f985b9be8ab6bb229eccbcca35ce7afb42a3a37d8a25a810e2ab5ee1e"
+  },
+  "prompt_version": "decision-v1",
+  "answer_markers": "ABCDEFGHIJKLMNOP",
+  "processor": {
+    "max_soft_tokens_per_image": 140,
+    "max_processed_sequence": 2048,
+    "max_images": 4
+  },
+  "data_sha256": {
+    "train": "e57dbcb10c0f5f4edc7e2b375ea6011df90c3ab2a0dc8f47e3d9286965918225",
+    "dev": "3dfd8282f268d6add2d5811bc4b0746915212a2e16ac40b75803cc4ab6c28ce4",
+    "calibration": "330bce290f4e7e1adf4e68bb049e1c1397b411a88ee7bb8180b4d15317abb99c",
+    "test": "baca2998b9d412ad78e4f651b54409dd175c8a5b8fb5de9d9b76dacf6b6fb848"
+  },
+  "systems": {
+    "frozen": {
+      "adapter": null,
+      "temperature": 4.047653702654723,
+      "temperature_fit_split": "calibration"
+    },
+    "experimental_adapter": {
+      "adapter": "runs/main_1epoch/selected",
+      "adapter_sha256": "87ef1029610d23688512883700c35aefa60f751850e8483225a64354701c3e45",
+      "selected_checkpoint": "0002000_adapters.safetensors",
+      "temperature": 1.4914477134397612,
+      "temperature_fit_split": "calibration"
+    }
+  }
+}

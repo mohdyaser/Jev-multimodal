@@ -1,0 +1,29 @@
+{
+  "converted_model": "mlx-community/gemma-4-e4b-it-4bit",
+  "converted_revision": "475b9088d29754a3379866cf5aeb6b41acd313c2",
+  "source_model": "google/gemma-4-E4B-it",
+  "source_revision_from_conversion_card": "fee6332c1abaafb77f6f9624236c63aa2f1d0187",
+  "license": "gemma",
+  "mlx_vlm_version": "0.7.3",
+  "mlx_version": "0.32.2",
+  "python_version": "3.11.9",
+  "quantization": {
+    "bits": 4,
+    "group_size": 64,
+    "mode": "affine"
+  },
+  "processor": {
+    "max_soft_tokens_per_image_requested": 140,
+    "actual_fixture_image_tokens_per_image": 126,
+    "max_processed_sequence": 2048,
+    "max_images": 4
+  },
+  "prompt_version": "decision-v1",
+  "answer_markers": "ABCDEFGHIJKLMNOP",
+  "file_sha256": {
+    "config.json": "780ccb3a514a5f1ced161d383f948fc22eca9b84b752ca19494f625bd9bad7a6",
+    "processor_config.json": "de3e580aebdc98272d4c4547daffe6525fcbae18a83a0e0bcf0d7444d4ee6f37",
+    "tokenizer.json": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+    "chat_template.jinja": "2f1b4d75d067bae3fe44e676721c7f077d243bc007156cb9c2f8b5836613d082"
+  }
+}

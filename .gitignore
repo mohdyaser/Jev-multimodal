@@ -1,0 +1,11 @@
+.venv/
+.uv-cache/
+.ruff_cache/
+.hf-cache/
+.cache/
+models/
+data/generated/
+runs/
+__pycache__/
+*.py[cod]
+.DS_Store

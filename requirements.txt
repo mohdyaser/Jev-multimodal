@@ -1,0 +1,9 @@
+mlx-vlm[train]==0.7.3
+mlx==0.32.2
+transformers==5.17.0
+tokenizers==0.23.2
+numpy==2.4.6
+Pillow==12.3.0
+safetensors==0.8.0
+datasets==5.0.1
+sentencepiece==0.2.2

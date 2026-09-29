@@ -1,0 +1,13 @@
+# Online dataset suitability check
+
+Checked 29 September 2026, before choosing the production data source. This is a small source and schema review, not a full label or media audit. No third-party records were copied into `data/generated`.
+
+| Candidate | What the primary source shows | Decision for this 2,000-row prototype |
+|---|---|---|
+| [Ai2 Molmo2-SynMultiImageQA](https://huggingface.co/datasets/allenai/Molmo2-SynMultiImageQA) | The card describes synthetic multi-image chart, document, diagram, and table QA. The public chart preview includes examples with two to more than four images; its questions and answers are often open-ended, with some embedded choices. The card lists ODC-BY plus research/education and model-provider terms for generated code/questions. | Relevant for a later curated multi-image slice, but not a direct conversion to verified 2–16-option labels. Each selected row would need image-count filtering, rights review for the intended use, and visual verification of every image and answer. We did not use it here. |
+| [VQAv2](https://visualqa.org/download.html) and [terms](https://visualqa.org/terms.html) | Single-image visual QA; the terms license the *annotations* under CC BY 4.0. The associated image rights require a separate check. | Useful future natural-image source, but independently labeled images do not establish a correct joint 2–4-image question. No multi-image combinations were fabricated from its labels. |
+| [Amazon MASSIVE](https://huggingface.co/datasets/AmazonScience/massive) | CC BY 4.0 text intent data; no images and 60 intent classes in the described corpus. | Could supply later text-only tasks with a carefully defined 2–16-option subset, but it does not address the multi-image bottleneck. |
+
+The [Molmo2 public viewer](https://huggingface.co/datasets/allenai/Molmo2-SynMultiImageQA) was inspected directly. The local API-only helper `scripts/audit_molmo2_synmultiimageqa.py` is retained for repeatable small samples, but its run here failed before returning rows because the local Python HTTPS certificate chain could not be verified. This review therefore makes no claim of a comprehensive sampled error rate or media-rights clearance.
+
+The experiment used deterministic, locally rendered synthetic cards and text with explicit label rules instead. The production data contain 2,000 train, 100 dev, 100 calibration, and 200 test decisions. The [label audit](label_audit.md) covers sampled internal consistency. The missing real-image slice is a substantive limit: none of the reported model results establishes natural-image performance.
