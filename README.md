@@ -28,6 +28,26 @@ local files against this manifest; unchanged files use a local verification
 cache. `config/experiment.json` records the default system, selected adapter
 hash, split hashes, prompt/processor settings, and both calibration scalars.
 
+## Try the local UI
+
+With the environment and model files from setup in place, start the browser
+interface:
+
+```sh
+.venv/bin/python src/jev_ui.py --open
+```
+
+Open `http://127.0.0.1:7860/` if a browser does not open automatically. Choose
+the **noul** (yes/no), **choice**, or **score** template, edit its question and
+options, and optionally add up to four ordered PNG, JPEG, or WebP images. The
+result shows the selected option and a normalized probability for every
+option; score also shows the expected numeric score. Use the model selector
+to compare the frozen base with the experimental adapter. The frozen base is
+the default. The server listens only on this machine, loads the model on the
+first prediction, and applies the calibration temperature recorded in
+`config/experiment.json`. Stop it with Ctrl+C. These probabilities compare
+the supplied options; they are not a guarantee that an answer is correct.
+
 ## Data and verification
 
 The deterministic local generator creates 2,000 training decisions, 100

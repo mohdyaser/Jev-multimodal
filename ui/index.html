@@ -1,0 +1,381 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f5f4ef">
+  <title>Gemma decision lab</title>
+  <style>
+    :root { color-scheme: light; --ink:#17221d; --muted:#64716a; --line:#dce2db; --paper:#fff; --wash:#f5f4ef; --green:#176c4a; --green-dark:#10543a; --mint:#e5f3eb; --red:#a33535; --shadow:0 10px 30px rgba(21,43,31,.07); font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    * { box-sizing:border-box; }
+    [hidden] { display:none!important; }
+    body { margin:0; background:var(--wash); color:var(--ink); line-height:1.45; }
+    button,input,textarea,select { font:inherit; }
+    button { cursor:pointer; }
+    .shell { width:min(1120px, calc(100% - 40px)); margin:0 auto; padding:34px 0 60px; }
+    header { display:flex; align-items:flex-start; justify-content:space-between; gap:24px; margin-bottom:25px; }
+    .eyebrow { margin:0 0 8px; color:var(--green); font-size:.76rem; font-weight:750; letter-spacing:.12em; text-transform:uppercase; }
+    h1 { margin:0; font-family:Georgia,"Times New Roman",serif; font-weight:500; letter-spacing:-.035em; font-size:clamp(2rem,4vw,3.1rem); line-height:1.05; }
+    .intro { margin:11px 0 0; color:var(--muted); max-width:620px; }
+    .local-badge { display:inline-flex; align-items:center; gap:8px; flex:0 0 auto; padding:8px 12px; border:1px solid var(--line); border-radius:99px; background:#fff9; color:#44544b; font-size:.84rem; }
+    .dot { width:8px;height:8px;border-radius:50%;background:#39a16e;box-shadow:0 0 0 3px #39a16e22; }
+    .layout { display:grid; grid-template-columns:minmax(0,1.15fr) minmax(310px,.85fr); align-items:start; gap:20px; }
+    .card { background:var(--paper); border:1px solid var(--line); border-radius:17px; box-shadow:var(--shadow); }
+    .form-card { padding:23px; }
+    .section-head { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; }
+    h2 { margin:0; font-size:1rem; letter-spacing:-.01em; }
+    .step { color:#87938c; font-size:.76rem; font-weight:700; letter-spacing:.08em; text-transform:uppercase; }
+    .tabs { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; padding:5px; border:1px solid var(--line); border-radius:12px; background:#f6f8f5; margin-bottom:22px; }
+    .tab { border:0; border-radius:8px; padding:10px 8px; background:transparent; color:#65736a; font-weight:700; }
+    .tab[aria-selected="true"] { color:var(--green-dark); background:white; box-shadow:0 1px 5px #152b1f18; }
+    .tab small { display:block; font-size:.72rem; font-weight:500; margin-top:1px; }
+    .field { margin:0 0 17px; }
+    label,.field-label { display:block; margin-bottom:7px; font-size:.86rem; font-weight:700; }
+    .hint { color:var(--muted); font-size:.8rem; font-weight:400; }
+    input[type="text"],input[type="number"],textarea,select { width:100%; border:1px solid #cfd8d0; border-radius:9px; color:var(--ink); background:white; padding:11px 12px; outline:none; }
+    textarea { resize:vertical; min-height:90px; }
+    input:focus,textarea:focus,select:focus,button:focus-visible { outline:3px solid #50a77b55; outline-offset:1px; border-color:#55a779; }
+    .question { min-height:75px; }
+    .two-col { display:grid; grid-template-columns:1fr 1fr; gap:11px; }
+    .options-title { margin:21px 0 9px; display:flex; align-items:center; justify-content:space-between; }
+    .options-list { display:grid; gap:8px; }
+    .option-row { display:grid; grid-template-columns:minmax(85px,.28fr) minmax(0,1fr) 42px; gap:8px; align-items:center; }
+    .option-row.score-row { grid-template-columns:76px minmax(0,1fr) 88px 42px; }
+    .option-row input { min-width:0; padding:9px 10px; }
+    .option-id { color:#849088; background:#f7f9f7!important; }
+    .small-btn,.icon-btn { border:1px solid var(--line); border-radius:8px; background:white; color:#536158; padding:8px 10px; font-weight:650; }
+    .icon-btn { width:38px;height:38px; padding:0; }
+    .small-btn:hover,.icon-btn:hover { background:#f3f7f3; }
+    .text-btn { border:0; background:transparent; color:var(--green); font-weight:750; padding:4px 0; }
+    .text-btn:disabled { color:#a6b0a8; cursor:not-allowed; }
+    .image-drop { border:1.5px dashed #bdcbc0; border-radius:12px; background:#f9fbf9; padding:15px; transition:.15s ease; }
+    .image-drop.dragover { background:var(--mint); border-color:var(--green); }
+    .drop-line { display:flex; align-items:center; gap:12px; }
+    .upload-icon { display:grid; place-items:center; width:37px;height:37px; border-radius:10px; background:#e8f2eb; color:var(--green); font-size:1.2rem; }
+    .drop-copy { flex:1; min-width:0; }
+    .drop-copy strong { display:block; font-size:.88rem; }
+    .drop-copy span { color:var(--muted); font-size:.78rem; }
+    .image-list { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:9px; margin-top:12px; }
+    .image-item { position:relative; overflow:hidden; border:1px solid var(--line); border-radius:10px; background:#f5f6f4; aspect-ratio:1; }
+    .image-item img { display:block; width:100%;height:100%;object-fit:cover; }
+    .image-number { position:absolute; left:6px;top:6px; padding:2px 7px; color:white; background:#14231cce; border-radius:30px; font-size:.7rem; font-weight:750; }
+    .image-controls { position:absolute; right:5px;top:5px; display:flex; gap:3px; }
+    .image-controls button { width:25px;height:25px; padding:0; border:0; border-radius:6px; background:#fffffff0; color:#26382e; font-size:.75rem; }
+    .image-name { position:absolute; left:0;right:0;bottom:0; overflow:hidden; padding:15px 6px 5px; background:linear-gradient(transparent,#101c18d9); color:white; font-size:.68rem; text-overflow:ellipsis; white-space:nowrap; }
+    .settings { display:grid; grid-template-columns:1fr; gap:12px; margin-top:20px; padding-top:18px; border-top:1px solid #edf0ec; }
+    select { padding:10px 12px; }
+    .submit-row { display:flex; align-items:center; gap:12px; margin-top:20px; }
+    .submit { border:0; border-radius:9px; padding:11px 17px; background:var(--green); color:white; font-weight:750; box-shadow:0 3px 8px #176c4a26; }
+    .submit:hover { background:var(--green-dark); }
+    .submit:disabled { opacity:.65; cursor:wait; }
+    .privacy { color:var(--muted); font-size:.75rem; }
+    .errors { display:none; margin:14px 0 0; padding:10px 12px; border:1px solid #f0c7c7; border-radius:9px; background:#fff6f6; color:var(--red); font-size:.84rem; }
+    .errors.show { display:block; }
+    .errors ul { margin:0; padding-left:18px; }
+    .result-card { position:sticky;top:18px; overflow:hidden; min-height:310px; }
+    .result-head { padding:21px 22px 17px; border-bottom:1px solid #edf0ec; }
+    .result-head p { margin:5px 0 0; color:var(--muted); font-size:.82rem; }
+    .result-body { padding:20px 22px 23px; }
+    .empty-state { min-height:200px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; color:var(--muted); }
+    .empty-mark { display:grid;place-items:center;width:47px;height:47px;border-radius:14px;background:#eef4ef;color:var(--green);font-size:1.35rem;margin-bottom:12px; }
+    .empty-state strong { color:#33443a; font-size:.92rem; }
+    .empty-state span { max-width:235px; font-size:.8rem; margin-top:5px; }
+    .loading { display:none; color:var(--muted); font-size:.86rem; }
+    .loading.show { display:flex;align-items:center;gap:10px; }
+    .spinner { width:17px;height:17px;border:2px solid #d5e2d8;border-top-color:var(--green);border-radius:50%;animation:spin .8s linear infinite; }
+    @keyframes spin { to { transform:rotate(360deg); } }
+    .answer { padding:14px 15px; margin-bottom:21px; border-radius:11px; background:#edf6ef; border:1px solid #d7eadc; }
+    .answer-kicker { color:var(--green); text-transform:uppercase; letter-spacing:.09em; font-size:.68rem; font-weight:800; }
+    .answer-value { display:block; margin-top:3px; overflow-wrap:anywhere; font-size:1.2rem; font-weight:750; }
+    .metric-row { display:flex;justify-content:space-between;gap:10px;margin:0 0 17px; }
+    .metric { flex:1; padding:10px 11px; border:1px solid var(--line); border-radius:10px; }
+    .metric span { display:block; color:var(--muted); font-size:.73rem; }
+    .metric strong { display:block; margin-top:2px; font-size:1.08rem; }
+    .prob-title { display:flex;justify-content:space-between;align-items:center;margin-bottom:11px; font-size:.83rem; font-weight:750; }
+    .prob-list { display:grid;gap:12px; }
+    .prob-top { display:flex;justify-content:space-between;gap:12px;margin-bottom:5px;font-size:.79rem; }
+    .prob-label { overflow:hidden;text-overflow:ellipsis;white-space:nowrap; }
+    .prob-value { flex:0 0 auto;color:#425248;font-variant-numeric:tabular-nums;font-weight:700; }
+    .track { width:100%;height:8px;border-radius:99px;overflow:hidden;background:#edf0ec; }
+    .fill { height:100%;border-radius:99px;background:#469b6d;transition:width .3s ease; }
+    .fill.selected { background:var(--green-dark); }
+    .api-error { color:var(--red); white-space:pre-wrap; font-size:.86rem; }
+    .raw { margin-top:18px; padding-top:13px; border-top:1px solid #edf0ec; color:#859088; font-size:.72rem; }
+    .raw summary { cursor:pointer; font-weight:700; }
+    .raw pre { overflow:auto; max-height:220px; padding:10px; border-radius:8px; background:#f6f8f6; color:#46544b; }
+    @media(max-width:800px) { .layout{grid-template-columns:1fr}.result-card{position:static;min-height:240px} .empty-state{min-height:140px} }
+    @media(max-width:520px) { .shell{width:min(100% - 24px,700px);padding:23px 0 40px} header{display:block}.local-badge{margin-top:15px}.form-card{padding:16px}.result-head,.result-body{padding-left:17px;padding-right:17px}.option-row{grid-template-columns:83px minmax(0,1fr) 38px;gap:6px}.option-row.score-row{grid-template-columns:58px minmax(0,1fr) 70px 38px;gap:5px}.option-row input{font-size:.84rem;padding:9px 7px}.image-list{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}.two-col{grid-template-columns:1fr} }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header>
+      <div>
+        <p class="eyebrow">Local model playground</p>
+        <h1>Gemma decision lab</h1>
+        <p class="intro">Ask a question with text or images. See the model’s choice and its probability for every answer.</p>
+      </div>
+      <div class="local-badge"><span class="dot" aria-hidden="true"></span> Runs on this machine</div>
+    </header>
+
+    <div class="layout">
+      <section class="card form-card" aria-label="Prediction request">
+        <div class="section-head"><h2>Build a prompt</h2><span class="step">Request</span></div>
+        <div class="tabs" role="tablist" aria-label="Answer type">
+          <button class="tab" id="tab-noul" role="tab" aria-selected="true" aria-controls="template-panel" data-type="noul">Yes / no<small>noul</small></button>
+          <button class="tab" id="tab-choice" role="tab" aria-selected="false" aria-controls="template-panel" data-type="choice">Choose one<small>choice</small></button>
+          <button class="tab" id="tab-score" role="tab" aria-selected="false" aria-controls="template-panel" data-type="score">Ordered score<small>score</small></button>
+        </div>
+
+        <div id="template-panel" role="tabpanel" aria-labelledby="tab-noul">
+          <div class="field">
+            <label for="question">Question <span class="hint">Required</span></label>
+            <textarea id="question" class="question" placeholder="What should the model decide?" required></textarea>
+          </div>
+          <div class="field">
+            <label for="context">Context <span class="hint">Optional</span></label>
+            <textarea id="context" placeholder="Add any background information that helps answer the question." rows="3"></textarea>
+          </div>
+
+          <div class="options-title"><h2 id="options-heading">Answer options</h2><span class="hint" id="option-count">2 options</span></div>
+          <div id="options-list" class="options-list" aria-label="Editable answer options"></div>
+          <button id="add-option" class="text-btn" type="button" hidden>+ Add option</button>
+        </div>
+
+        <div class="field" style="margin-top:22px">
+          <div class="section-head"><label for="image-input" style="margin:0">Images <span class="hint">Optional · up to 4, in order</span></label><span class="step" id="image-count">0 / 4</span></div>
+          <div id="dropzone" class="image-drop">
+            <div class="drop-line">
+              <span class="upload-icon" aria-hidden="true">＋</span>
+              <div class="drop-copy"><strong>Drop images here</strong><span>or choose from your device · PNG, JPEG, WebP</span></div>
+              <button class="small-btn" id="browse-images" type="button">Browse</button>
+              <input id="image-input" type="file" accept="image/png,image/jpeg,image/webp" multiple hidden>
+            </div>
+            <div id="image-list" class="image-list" aria-label="Uploaded images"></div>
+          </div>
+          <p class="hint" style="margin:7px 0 0">Use the arrows to set image order. Refer to them in your question as image_1, image_2, and so on.</p>
+        </div>
+
+        <div class="settings">
+          <div class="field" style="margin:0">
+            <label for="model-choice">Model</label>
+            <select id="model-choice">
+              <option value="frozen">Frozen model</option>
+              <option value="experimental_adapter">Experimental adapter</option>
+            </select>
+          </div>
+        </div>
+        <div class="submit-row">
+          <button id="submit" class="submit" type="button">Run prediction <span aria-hidden="true">→</span></button>
+          <span class="privacy">Images are sent to the local prediction server.</span>
+        </div>
+        <div id="validation-errors" class="errors" role="alert" aria-live="assertive"></div>
+      </section>
+
+      <section class="card result-card" aria-label="Prediction result" aria-live="polite">
+        <div class="result-head"><h2>Model output</h2><p>Answer probabilities are normalized across the options above.</p></div>
+        <div class="result-body" id="result-body">
+          <div class="empty-state" id="empty-state"><div class="empty-mark" aria-hidden="true">◉</div><strong>Your result will appear here</strong><span>Write a question, choose an answer type, then run a prediction.</span></div>
+          <div class="loading" id="loading"><span class="spinner" aria-hidden="true"></span> Asking the model…</div>
+          <div id="result-content" hidden></div>
+        </div>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    (() => {
+      const MAX_IMAGES = 4, MAX_OPTIONS = 16;
+      const templates = {
+        noul: { question: "Is the statement supported by the provided information?", options: [{id:"false",description:"No"},{id:"true",description:"Yes"}] },
+        choice: { question: "Which option best answers the question?", options: [{id:"option_1",description:"First option"},{id:"option_2",description:"Second option"}] },
+        score: { question: "How many items meet the condition?", options: [{id:"level_0",description:"None",value:0},{id:"level_1",description:"One",value:1},{id:"level_2",description:"Two",value:2}] }
+      };
+      let type = "noul", options = structuredClone(templates.noul.options), images = [];
+      const $ = (id) => document.getElementById(id);
+      const questionEl = $("question"), contextEl = $("context"), optionsEl = $("options-list"), addButton = $("add-option");
+
+      function renderOptions() {
+        optionsEl.replaceChildren();
+        options.forEach((option, index) => {
+          const row = document.createElement("div");
+          row.className = `option-row${type === "score" ? " score-row" : ""}`;
+          const idInput = document.createElement("input");
+          idInput.type = "text"; idInput.value = option.id; idInput.maxLength = 40; idInput.setAttribute("aria-label", `Option ${index + 1} ID`);
+          idInput.className = type === "noul" ? "option-id" : ""; idInput.readOnly = type === "noul";
+          idInput.addEventListener("input", () => { options[index].id = idInput.value.trim(); });
+          const desc = document.createElement("input");
+          desc.type = "text"; desc.value = option.description; desc.maxLength = 240; desc.placeholder = "Describe this answer"; desc.setAttribute("aria-label", `Option ${index + 1} description`);
+          desc.addEventListener("input", () => { options[index].description = desc.value; });
+          row.append(idInput, desc);
+          if (type === "score") {
+            const value = document.createElement("input"); value.type = "number"; value.step = "any"; value.value = option.value; value.setAttribute("aria-label", `Numeric value for level ${index + 1}`); value.title = "Numeric score value";
+            value.addEventListener("input", () => { options[index].value = value.value; }); row.append(value);
+          }
+          const remove = document.createElement("button"); remove.type = "button"; remove.className = "icon-btn"; remove.textContent = "×"; remove.setAttribute("aria-label", `Remove option ${index + 1}`); remove.disabled = type === "noul" || options.length <= 2;
+          remove.addEventListener("click", () => { options.splice(index, 1); renderOptions(); }); row.append(remove);
+          optionsEl.append(row);
+        });
+        $("option-count").textContent = `${options.length} option${options.length === 1 ? "" : "s"}`;
+        addButton.hidden = type === "noul"; addButton.disabled = options.length >= MAX_OPTIONS;
+        $("options-heading").textContent = type === "noul" ? "Answer options · fixed IDs" : type === "score" ? "Ordered levels · low to high" : "Answer options";
+      }
+
+      function selectType(next) {
+        questionEl.value = templates[next].question;
+        contextEl.value = "";
+        options = structuredClone(templates[next].options);
+        $("result-content").hidden = true;
+        $("empty-state").hidden = false;
+        clearErrors();
+        type = next;
+        document.querySelectorAll(".tab").forEach(tab => {
+          const active = tab.dataset.type === type; tab.setAttribute("aria-selected", String(active)); tab.tabIndex = active ? 0 : -1;
+        });
+        $("template-panel").setAttribute("aria-labelledby", `tab-${type}`);
+        renderOptions();
+      }
+
+      document.querySelectorAll(".tab").forEach((tab, i, all) => {
+        tab.addEventListener("click", () => selectType(tab.dataset.type));
+        tab.addEventListener("keydown", e => { if (["ArrowLeft","ArrowRight"].includes(e.key)) { e.preventDefault(); const target = all[(i + (e.key === "ArrowRight" ? 1 : 2)) % 3]; target.focus(); target.click(); } });
+      });
+      addButton.addEventListener("click", () => {
+        if (options.length >= MAX_OPTIONS) return;
+        let n = options.length + 1;
+        let id = type === "score" ? `level_${n-1}` : `option_${n}`;
+        while (options.some(option => option.id === id)) { n++; id = type === "score" ? `level_${n-1}` : `option_${n}`; }
+        options.push(type === "score" ? {id,description:`Level ${n-1}`,value:Number(options.at(-1).value) + 1} : {id,description:`Option ${n}`}); renderOptions();
+      });
+
+      function renderImages() {
+        const list = $("image-list"); list.replaceChildren(); $("image-count").textContent = `${images.length} / ${MAX_IMAGES}`;
+        images.forEach((image, index) => {
+          const item = document.createElement("div"); item.className = "image-item"; item.draggable = true; item.dataset.index = index;
+          const img = document.createElement("img"); img.src = image.data_url; img.alt = `Image ${index + 1}: ${image.name}`;
+          const number = document.createElement("span"); number.className = "image-number"; number.textContent = `image_${index + 1}`;
+          const controls = document.createElement("div"); controls.className = "image-controls";
+          [["↑", "Move image earlier", -1], ["↓", "Move image later", 1], ["×", "Remove image", 0]].forEach(([label, title, delta]) => {
+            const button = document.createElement("button"); button.type = "button"; button.textContent = label; button.title = title; button.setAttribute("aria-label", `${title} ${image.name}`);
+            if ((delta < 0 && index === 0) || (delta > 0 && index === images.length - 1)) button.disabled = true;
+            button.addEventListener("click", () => { if (delta === 0) images.splice(index, 1); else [images[index], images[index + delta]] = [images[index + delta], images[index]]; renderImages(); }); controls.append(button);
+          });
+          const name = document.createElement("span"); name.className = "image-name"; name.textContent = image.name;
+          item.append(img, number, controls, name);
+          item.addEventListener("dragstart", e => { e.dataTransfer.setData("text/plain", String(index)); e.dataTransfer.effectAllowed = "move"; });
+          item.addEventListener("dragover", e => { e.preventDefault(); e.dataTransfer.dropEffect = "move"; });
+          item.addEventListener("drop", e => { e.preventDefault(); const from = Number(e.dataTransfer.getData("text/plain")); if (Number.isInteger(from) && from !== index) { const [moved] = images.splice(from, 1); images.splice(index, 0, moved); renderImages(); } });
+          list.append(item);
+        });
+      }
+
+      async function addFiles(files) {
+        const errors = [];
+        for (const file of files) {
+          if (images.length >= MAX_IMAGES) { errors.push("You can attach up to four images."); break; }
+          if (!["image/png", "image/jpeg", "image/webp"].includes(file.type)) { errors.push(`${file.name} must be PNG, JPEG, or WebP.`); continue; }
+          if (file.size > 12 * 1024 * 1024) { errors.push(`${file.name} exceeds the 12 MB upload limit.`); continue; }
+          try { const data_url = await new Promise((resolve, reject) => { const reader = new FileReader(); reader.onload = () => resolve(reader.result); reader.onerror = () => reject(new Error("Could not read file")); reader.readAsDataURL(file); }); images.push({name:file.name,data_url}); }
+          catch { errors.push(`Could not read ${file.name}.`); }
+        }
+        renderImages(); if (errors.length) showErrors(errors);
+      }
+      $("browse-images").addEventListener("click", () => $("image-input").click());
+      $("image-input").addEventListener("change", async e => { await addFiles([...e.target.files]); e.target.value = ""; });
+      const dropzone = $("dropzone");
+      ["dragenter","dragover"].forEach(name => dropzone.addEventListener(name, e => { e.preventDefault(); dropzone.classList.add("dragover"); }));
+      ["dragleave","drop"].forEach(name => dropzone.addEventListener(name, e => { e.preventDefault(); dropzone.classList.remove("dragover"); }));
+      dropzone.addEventListener("drop", e => addFiles([...e.dataTransfer.files]));
+
+      function showErrors(errors) { const box = $("validation-errors"); box.replaceChildren(); const ul = document.createElement("ul"); errors.forEach(error => { const li = document.createElement("li"); li.textContent = error; ul.append(li); }); box.append(ul); box.classList.add("show"); }
+      function clearErrors() { $("validation-errors").classList.remove("show"); $("validation-errors").replaceChildren(); }
+      function validate() {
+        const errors = [];
+        if (!questionEl.value.trim()) errors.push("Enter a question.");
+        if (options.length < 2 || options.length > MAX_OPTIONS) errors.push("Add between 2 and 16 options.");
+        const ids = options.map(o => o.id.trim());
+        if (ids.some(id => !id)) errors.push("Every option needs a nonempty ID.");
+        if (new Set(ids).size !== ids.length) errors.push("Option IDs must be unique.");
+        if (options.some(o => !o.description.trim())) errors.push("Every option needs a description.");
+        if (type === "noul" && (options.length !== 2 || !ids.includes("false") || !ids.includes("true"))) errors.push("Yes / no needs exactly the false and true option IDs.");
+        if (type === "score") {
+          const values = options.map(o => Number(o.value));
+          if (options.some(o => String(o.value).trim() === "") || values.some(v => !Number.isFinite(v))) errors.push("Enter a numeric value for every score level.");
+          else if (values.some((v,i) => i > 0 && v <= values[i-1])) errors.push("Score values must increase from top to bottom.");
+        }
+        if (images.length > MAX_IMAGES) errors.push("Use no more than four images.");
+        const refs = `${questionEl.value}\n${contextEl.value}\n${options.map(o => o.description).join("\n")}`;
+        for (const match of refs.matchAll(/\bimage_(\d+)\b/gi)) if (+match[1] < 1 || +match[1] > images.length) errors.push(`The prompt refers to ${match[0]}, but that image is not attached.`);
+        return errors;
+      }
+
+      function buildPayload() {
+        const payload = { question:questionEl.value.trim(), context:contextEl.value.trim(), images:images.map(({name,data_url}) => ({name,data_url})), output_type:type, options:options.map(o => ({id:o.id.trim(),description:o.description.trim()})), model_choice:$("model-choice").value };
+        if (type === "score") payload.level_values = options.map(o => Number(o.value));
+        return payload;
+      }
+      function showLoading(isLoading) { $("submit").disabled = isLoading; $("submit").innerHTML = isLoading ? '<span class="spinner" aria-hidden="true" style="display:inline-block;vertical-align:-3px;border-color:#ffffff66;border-top-color:white"></span> Running…' : 'Run prediction <span aria-hidden="true">→</span>'; $("loading").classList.toggle("show", isLoading); if (isLoading) { $("empty-state").hidden = true; $("result-content").hidden = true; } }
+      function renderResult(data, payload) {
+        const content = $("result-content"); content.replaceChildren(); content.hidden = false; $("empty-state").hidden = true;
+        if (data.error) { const error = document.createElement("div"); error.className = "api-error"; error.textContent = typeof data.error === "string" ? data.error : JSON.stringify(data.error); content.append(error); return; }
+        const selectedId = data.selected_id;
+        const chosen = payload.options.find(o => o.id === selectedId);
+        const answer = document.createElement("div"); answer.className = "answer";
+        const kicker = document.createElement("span"); kicker.className = "answer-kicker"; kicker.textContent = "Selected answer";
+        const answerValue = document.createElement("strong"); answerValue.className = "answer-value"; answerValue.textContent = chosen ? chosen.description : (selectedId ?? "No selected answer");
+        answer.append(kicker, answerValue); content.append(answer);
+        const metrics = document.createElement("div"); metrics.className = "metric-row";
+        if (data.probability_true != null) addMetric(metrics, "P(Yes)", percent(data.probability_true));
+        if (data.expected_score != null) addMetric(metrics, "Expected score", Number(data.expected_score).toFixed(2));
+        if (metrics.childElementCount) content.append(metrics);
+        const title = document.createElement("div"); title.className = "prob-title"; const caption = document.createElement("span"); caption.textContent = "All probabilities"; const count = document.createElement("span"); count.className = "hint"; count.textContent = `${payload.options.length} options`; title.append(caption,count); content.append(title);
+        const list = document.createElement("div"); list.className = "prob-list";
+        payload.options.forEach(option => {
+          const raw = data.probabilities?.[option.id]; const probability = Number(raw); if (!Number.isFinite(probability)) return;
+          const row = document.createElement("div"); const top = document.createElement("div"); top.className = "prob-top";
+          const label = document.createElement("span"); label.className = "prob-label"; label.textContent = option.description;
+          const value = document.createElement("span"); value.className = "prob-value"; value.textContent = percent(probability);
+          top.append(label,value); const track = document.createElement("div"); track.className = "track"; track.setAttribute("role","meter"); track.setAttribute("aria-label",`${option.description} probability`); track.setAttribute("aria-valuemin","0"); track.setAttribute("aria-valuemax","100"); track.setAttribute("aria-valuenow",String(Math.round(probability*100)));
+          const fill = document.createElement("div"); fill.className = `fill${option.id === selectedId ? " selected" : ""}`; fill.style.width = `${Math.max(0,Math.min(100,probability*100))}%`; track.append(fill); row.append(top,track); list.append(row);
+        });
+        content.append(list);
+        const details = document.createElement("details"); details.className = "raw"; const summary = document.createElement("summary"); summary.textContent = "Response details"; const pre = document.createElement("pre"); pre.textContent = JSON.stringify(data,null,2); details.append(summary,pre); content.append(details);
+      }
+      function addMetric(container,labelText,valueText) { const box=document.createElement("div");box.className="metric";const label=document.createElement("span");label.textContent=labelText;const value=document.createElement("strong");value.textContent=valueText;box.append(label,value);container.append(box); }
+      function percent(value) { return `${(Number(value)*100).toFixed(1)}%`; }
+      async function loadConfig() {
+        try {
+          const response = await fetch("/api/config"); if (!response.ok) return;
+          const config = await response.json(); const select = $("model-choice");
+          const modelMap = {frozen:config.models?.frozen, experimental_adapter:config.models?.experimental_adapter};
+          for (const option of select.options) {
+            const model = modelMap[option.value];
+            if (!model) continue;
+            option.disabled = model.available === false;
+            if (model.available === false) option.textContent = `${option.value === "frozen" ? "Frozen model" : "Experimental adapter"} · unavailable`;
+          }
+          const requestedDefault = config.default_model;
+          if (requestedDefault && [...select.options].some(option => option.value === requestedDefault && !option.disabled)) select.value = requestedDefault;
+          else if (select.selectedOptions[0]?.disabled) {
+            const firstAvailable = [...select.options].find(option => !option.disabled);
+            if (firstAvailable) select.value = firstAvailable.value;
+          }
+        } catch { /* Keep the frozen model as the local default while config is unavailable. */ }
+      }
+      $("submit").addEventListener("click", async () => {
+        clearErrors(); const errors = validate(); if (errors.length) { showErrors(errors); $("validation-errors").scrollIntoView({behavior:"smooth",block:"nearest"}); return; }
+        const payload = buildPayload(); showLoading(true);
+        try {
+          const response = await fetch("/api/predict", {method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(payload)});
+          let data; try { data = await response.json(); } catch { throw new Error(`Server returned an unreadable response (HTTP ${response.status}).`); }
+          if (!response.ok) { const message = data.detail ?? data.error ?? data.message ?? `Prediction failed (HTTP ${response.status}).`; renderResult({error:typeof message === "string" ? message : JSON.stringify(message)},payload); }
+          else renderResult(data,payload);
+        } catch (error) { renderResult({error:`Could not reach /api/predict. ${error.message}`},payload); }
+        finally { showLoading(false); }
+      });
+      selectType("noul");
+      loadConfig();
+    })();
+  </script>
+</body>
+</html>
